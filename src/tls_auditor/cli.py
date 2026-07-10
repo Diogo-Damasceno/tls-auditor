@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-from .auditor import audit_cipher_list, classify_protocol, is_weak_cipher
+from .auditor import classify_protocol, is_weak_cipher, split_weak_ciphers
 from .scanner import is_cert_expired, scan_host
 
 

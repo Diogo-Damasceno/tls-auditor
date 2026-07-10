@@ -3,9 +3,9 @@
 from datetime import datetime, timedelta
 
 from tls_auditor.auditor import (
-    audit_cipher_list,
     classify_protocol,
     is_weak_cipher,
+    split_weak_ciphers,
 )
 from tls_auditor.scanner import is_cert_expired
 
@@ -42,9 +42,9 @@ def test_is_weak_cipher_safe():
         assert is_weak_cipher(c) is False
 
 
-def test_audit_cipher_list_separates():
+def test_split_weak_ciphers_separates():
     ciphers = ["AES256-GCM-SHA384", "RC4-MD5", "TLS_AES_256_GCM_SHA384", "DES-CBC3-SHA"]
-    out = audit_cipher_list(ciphers)
+    out = split_weak_ciphers(ciphers)
     assert set(out["weak"]) == {"RC4-MD5", "DES-CBC3-SHA"}
     assert set(out["safe"]) == {"AES256-GCM-SHA384", "TLS_AES_256_GCM_SHA384"}
 

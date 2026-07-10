@@ -7,15 +7,17 @@ possa ser testada de forma isolada (sem necessidade de rede).
 import ssl
 
 
-WEAK_PROTOCOLS = {"SSLv3", "TLSv1", "TLSv1.1"}
+# Protocolos considerados inseguros e que não devem ser negociados.
+DEPRECATED_PROTOCOLS = {"SSLv3", "TLSv1", "TLSv1.1"}
 
-WEAK_CIPHER_MARKERS = ("NULL", "RC4", "3DES", "EXPORT", "DES-CBC")
+# Marcadores de cifras fracas / quebradas.
+INSECURE_CIPHER_MARKERS = ("NULL", "RC4", "3DES", "EXPORT", "DES-CBC")
 
 
 def classify_protocol(version: str) -> str:
     """Classifica uma string de versão de protocolo como fraca ou ok."""
     base = version.split()[0]
-    if base in WEAK_PROTOCOLS:
+    if base in DEPRECATED_PROTOCOLS:
         return "weak"
     return "ok"
 
@@ -23,13 +25,13 @@ def classify_protocol(version: str) -> str:
 def is_weak_cipher(cipher_name: str) -> bool:
     """Detecta se um cipher é considerado fraco pelos marcadores conhecidos."""
     upper = cipher_name.upper()
-    for marker in WEAK_CIPHER_MARKERS:
+    for marker in INSECURE_CIPHER_MARKERS:
         if marker in upper:
             return True
     return False
 
 
-def audit_cipher_list(ciphers) -> dict:
+def split_weak_ciphers(ciphers) -> dict:
     """Recebe uma lista de nomes de ciphers e separa fracos de seguros."""
     weak = [c for c in ciphers if is_weak_cipher(c)]
     safe = [c for c in ciphers if not is_weak_cipher(c)]

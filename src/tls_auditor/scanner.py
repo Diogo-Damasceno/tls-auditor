@@ -1,6 +1,7 @@
 """Varredura real de um host:porta via SSL e análise de certificado."""
 
 import datetime
+import socket
 import ssl
 
 
@@ -14,25 +15,35 @@ def is_cert_expired(not_after) -> bool:
     return datetime.datetime.now() > not_after
 
 
+def _open_ssl_socket(host: str, port: int, context, timeout: float):
+    """Abre o socket TCP e envolve com TLS."""
+    raw = socket.create_connection((host, port), timeout=timeout)
+    return context.wrap_socket(raw, server_hostname=host)
+
+
 def scan_host(host: str, port: int = 443, timeout: float = 5.0) -> dict:
     """Conecta a host:porta, coleta protocolo, ciphers e validade do cert."""
     context = ssl.create_default_context()
-    result = {"host": host, "port": port, "protocol": None,
-              "cipher": None, "cert_expired": None}
-
-    with socket_create(host, port, context, timeout) as conn:
-        result["protocol"] = conn.version()
-        result["cipher"] = conn.cipher()[0]
+    with _open_ssl_socket(host, port, context, timeout) as conn:
+        protocol = conn.version()
+        cipher = conn.cipher()[0]
         cert = conn.getpeercert()
+        cert_expired = None
         if cert and "notAfter" in cert:
-            not_after = ssl.cert_time_to_seconds(cert["notAfter"])
-            exp = datetime.datetime.fromtimestamp(not_after)
-            result["cert_expired"] = is_cert_expired(exp)
+            exp = datetime.datetime.fromtimestamp(
+                ssl.cert_time_to_seconds(cert["notAfter"])
+            )
+            cert_expired = is_cert_expired(exp)
 
-    return result
+    return build_report(host, port, protocol, cipher, cert_expired)
 
 
-def socket_create(host, port, context, timeout):
-    import socket
-    raw = socket.create_connection((host, port), timeout=timeout)
-    return context.wrap_socket(raw, server_hostname=host)
+def build_report(host, port, protocol, cipher, cert_expired) -> dict:
+    """Monta o dicionário de resultado da varredura de forma testável."""
+    return {
+        "host": host,
+        "port": port,
+        "protocol": protocol,
+        "cipher": cipher,
+        "cert_expired": cert_expired,
+    }
