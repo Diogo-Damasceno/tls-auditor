@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tls-auditor"
+version = "0.1.0"
+description = "Auditor defensivo de configuração TLS/SSL"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Diogo Damasceno", email = "mitszukyo@gmail.com"}]
+keywords = ["tls", "ssl", "security", "audit", "defensive"]
+
+[project.scripts]
+tls-auditor = "tls_auditor.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
