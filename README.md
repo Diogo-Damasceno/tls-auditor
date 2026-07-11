@@ -2,46 +2,45 @@
 
 Auditor defensivo de configuração **TLS/SSL**. Dado um `host:porta`, abre uma
 conexão SSL e lista protocolos/versões suportadas, cifras (ciphers) e aponta
-configurações fracas.
+configurações fracas (SSLv3, TLS 1.0/1.1, cifras nulas/export, cert expirado).
 
-## Aviso ético
-
-Esta ferramenta é **educacional e defensiva**. Use-a apenas em sistemas de sua
-propriedade ou nos quais tenha autorização explícita para realizar testes de
-segurança. Varrer hosts de terceiros sem permissão pode violar leis e políticas
-de uso. O autor não se responsabiliza por uso indevido.
+> ⚠️ Ferramenta **educacional e defensiva**. Use apenas em sistemas de sua
+> propriedade ou com autorização. Varrer hosts alheios pode ser ilegal.
 
 ## Instalação
 
+Pré-requisitos: **Python 3.10+**.
+
 ```bash
+git clone https://github.com/Diogo-Damasceno/tls-auditor.git
+cd tls-auditor
+python3 -m venv .venv
+. .venv/bin/activate
 pip install -e .
 ```
 
-Requer Python 3.10+ (apenas biblioteca padrão).
+Após instalar, o comando do projeto fica disponível dentro do venv.
+Para usar fora dele, crie um atalho:
+
+```bash
+mkdir -p ~/.local/bin
+ln -sf "$(pwd)/.venv/bin/tls-auditor" ~/.local/bin/tls-auditor
+```
+
+> Dica: se `~/.local/bin` não estiver no teu `PATH`, rode
+> `export PATH="$HOME/.local/bin:$PATH"` (e adicione ao `~/.bashrc`/`~/.zshrc`).
+
 
 ## Uso
 
 ```bash
+# audita o TLS padrao (porta 443)
 tls-auditor example.com
+
+# porta custom
 tls-auditor example.com --port 8443
-```
-
-A saída mostra o protocolo negociado, o cipher e o estado de validade do
-certificado, sinalizando configurações inseguras.
-
-## O que é detectado como fraco
-
-- Protocolos: **SSLv3**, **TLS 1.0**, **TLS 1.1**
-- Cifras: **NULL**, **RC4**, **3DES**, **EXPORT**, **DES-CBC**
-- Certificado **expirado**
-
-## Testes
-
-```bash
-pip install pytest
-pytest tests/
 ```
 
 ## Licença
 
-MIT — Copyright (c) 2026 Diogo Damasceno. Veja `LICENSE`.
+MIT — veja `LICENSE`.
