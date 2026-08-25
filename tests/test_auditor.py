@@ -25,8 +25,8 @@ def test_is_weak_cipher_detects_markers():
     weak_samples = [
         "NULL-SHA",
         "RC4-MD5",
-        "DES-CBC3-SHA",  # 3DES
-        "EXP-RC4-MD5",   # EXPORT
+        "DES-CBC3-SHA",
+        "EXP-RC4-MD5",
     ]
     for c in weak_samples:
         assert is_weak_cipher(c) is True

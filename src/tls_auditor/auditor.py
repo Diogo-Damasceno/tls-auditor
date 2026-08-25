@@ -7,10 +7,10 @@ possa ser testada de forma isolada (sem necessidade de rede).
 import ssl
 
 
-# Protocolos considerados inseguros e que não devem ser negociados.
+
 DEPRECATED_PROTOCOLS = {"SSLv3", "TLSv1", "TLSv1.1"}
 
-# Marcadores de cifras fracas / quebradas.
+
 INSECURE_CIPHER_MARKERS = ("NULL", "RC4", "3DES", "EXPORT", "DES-CBC")
 
 
